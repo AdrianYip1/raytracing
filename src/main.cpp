@@ -1,10 +1,12 @@
 #include <iostream>
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "vendor/stb_image_write.h"
 #include <cstdlib>
 #include <vector>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "vendor/stb_image_write.h"
 #include <enginemath/vec3.hpp>
+
+#include "color.hpp"
 
 int main() {
 	// Image
@@ -17,17 +19,8 @@ int main() {
 	for (int j = 0; j < imageH; j++) {
 		std::clog << "\rScanlines remaining: " << (imageH - j) << " " << std::flush;
 		for (int i = 0; i < imageW; i++) {
-			auto r = double(i) / (imageW - 1);
-			auto g = double(j) / (imageH - 1);
-			auto b = 0.0;
-
-			int ir = int(255.999 * r);
-			int ig = int(255.999 * g);
-			int ib = int(255.999 * b);
-
-			data.push_back(static_cast<unsigned char>(ir));
-			data.push_back(static_cast<unsigned char>(ig));
-			data.push_back(static_cast<unsigned char>(ib));
+			auto pixel_color = color(double(i) / (imageW - 1), double(j) / (imageH - 1), 0.0);
+			writeColor(data, pixel_color);
 		}
 	}
 	std::clog << "\rDone.                 \n";
