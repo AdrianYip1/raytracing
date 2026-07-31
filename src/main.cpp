@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <vector>
 
+#include <enginemath/vec3.hpp>
+
 int main() {
 	// Image
 	int imageW = 256;
@@ -13,6 +15,7 @@ int main() {
 
 	// Render
 	for (int j = 0; j < imageH; j++) {
+		std::clog << "\rScanlines remaining: " << (imageH - j) << " " << std::flush;
 		for (int i = 0; i < imageW; i++) {
 			auto r = double(i) / (imageW - 1);
 			auto g = double(j) / (imageH - 1);
@@ -27,6 +30,7 @@ int main() {
 			data.push_back(static_cast<unsigned char>(ib));
 		}
 	}
+	std::clog << "\rDone.                 \n";
 
 	stbi_write_png("image.png", imageW, imageH, 3, data.data(), imageW * 3);
 	system("start image.png");

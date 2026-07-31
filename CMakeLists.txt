@@ -4,10 +4,14 @@ project(raytracer VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory(external/enginemath)
+
 add_executable(raytracer
     src/main.cpp)
 
 target_include_directories(raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_link_libraries(raytracer PRIVATE enginemath::enginemath)
 
 set_target_properties(raytracer PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
