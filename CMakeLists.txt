@@ -9,8 +9,9 @@ add_executable(raytracer
 
 target_include_directories(raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Renders are pure compute, so an unoptimized build is 10-20x slower.
-# Do timed renders in Release.
+set_target_properties(raytracer PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+
 if(MSVC)
     target_compile_options(raytracer PRIVATE $<$<CONFIG:Release>:/O2>)
 else()
