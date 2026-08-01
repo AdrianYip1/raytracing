@@ -5,7 +5,7 @@ sphere::sphere(const enginemath::Vec3& _center, float _radius) :
 
 }
 
-bool sphere::hit(const Ray& r, float ray_tmin, float ray_tmax, hit_record& rec) const {
+bool sphere::hit(const Ray& r, interval ray_t, hit_record& rec) const {
 	enginemath::Vec3 oc = center - r.getOrigin();
 	auto a = r.getDirection().dot(r.getDirection());
 	auto h = r.getDirection().dot(oc);
@@ -18,17 +18,17 @@ bool sphere::hit(const Ray& r, float ray_tmin, float ray_tmax, hit_record& rec) 
 	auto sqrtD = std::sqrt(discrim);
 	// Check the near hit first
 	auto root = (h - sqrtD) / a;
-	if (root <= ray_tmin || root >= ray_tmax) {
+	if (!ray_t.surrounds(root)) {
 		root = (h + sqrtD) / a;
-		if (root <= ray_tmin || root >= ray_tmax) {
+		if (!ray_t.surrounds(root)) {
 			return false;
 		}
 	}
 
 	rec.t = root;
 	rec.p = r.at(rec.t);
-	// Normalize for cheaper since length of rec.p - center is radius
-	rec.normal = (rec.p - center) / radius;
+	enginemath::Vec3 outward_normal = (rec.p - center) / radius;
+	rec.set_face_normal(r, outward_normal);
 
 	return true;
 }

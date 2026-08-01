@@ -1,5 +1,6 @@
 #pragma once
-#include <enginemath/vec3.hpp>
+
+#include "defines.h"
 
 class Ray {
 	public:

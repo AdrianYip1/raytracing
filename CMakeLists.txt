@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(external/enginemath)
 
 add_executable(raytracer
-    src/main.cpp "src/color.cpp" "src/ray.cpp" "src/hittable.cpp" "src/sphere.hpp" "src/sphere.cpp")
+    src/main.cpp "src/color.cpp" "src/ray.cpp" "src/hittable.cpp" "src/sphere.hpp" "src/sphere.cpp" "src/hittable_list.cpp" "src/defines.h" "src/interval.cpp")
 
 target_include_directories(raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 

@@ -4,40 +4,22 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "vendor/stb_image_write.h"
-#include <enginemath/vec3.hpp>
 
-#include "color.hpp"
-#include "ray.hpp"
+#include "defines.h"
 
-// Check if the ray intersects with any part of a given sphere
-float hitSphere(const enginemath::Vec3& center, double radius, const Ray& r) {
-	enginemath::Vec3 oc = center - r.getOrigin();
-	auto a = r.getDirection().dot(r.getDirection());
-	auto h = r.getDirection().dot(oc);
-	auto c = oc.dot(oc) - radius * radius;
-	auto discrim = h * h - a * c;
+#include "hittable.hpp"
+#include "hittable_list.hpp"
+#include "sphere.hpp"
 
-	// At least 1 root means the ray hit the sphere
-	if (discrim < 0) {
-		return -1.0;
-	}
-	else {
-		return (h - std::sqrt(discrim)) / (a);
-	}
-}
-
-// Return color for a given scene ray
-color ray_color(const Ray& r) {
-	auto t = hitSphere(enginemath::Vec3(0.0f, 0.0f, -1.0f), 0.5, r);
-	
-	if (t > 0.0) {
-		enginemath::Vec3 N = (r.at(t) - enginemath::Vec3(0.0f, 0.0f, -1.0f)).normalized();
-		return 0.5 * color(N.x + 1, N.y + 1, N.z + 1);
+color ray_color(const Ray& r, const hittable& world) {
+	hit_record rec;
+	if (world.hit(r, interval(0, infinity), rec)) {
+		return 0.5 * (rec.normal + color(1, 1, 1));
 	}
 
-	enginemath::Vec3 unitDirection = r.getDirection().normalized();
-	auto a = 0.5 * (unitDirection.y + 1.0);
-	return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+	enginemath::Vec3 unit_dir = r.getDirection().normalized();
+	auto a = 0.5 * (unit_dir.y + 1);
+	return (1- a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
 }
 
 
@@ -47,6 +29,14 @@ int main() {
 	int imageW = 400;
 	int imageH = imageW / aspectRatio;
 	imageH = std::max(imageH, 1);
+
+	// World
+
+	hittable_list world;
+
+	world.add(std::make_shared<sphere>(enginemath::Vec3(0, 0, -1), 0.5));
+
+	world.add(std::make_shared<sphere>(enginemath::Vec3(0, -100.5, -1), 100));
 
 	// Camrea
 	auto focalLength = 1.0;
@@ -78,7 +68,7 @@ int main() {
 			auto rayDirection = pixelCenter - cameraCenter;
 			Ray r(cameraCenter, rayDirection);
 
-			color pixel_color = ray_color(r);
+			color pixel_color = ray_color(r, world);
 			writeColor(data, pixel_color);
 		}
 	}
