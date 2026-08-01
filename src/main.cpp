@@ -10,21 +10,30 @@
 #include "ray.hpp"
 
 // Check if the ray intersects with any part of a given sphere
-bool hitSphere(const enginemath::Vec3& center, double radius, const Ray& r) {
+float hitSphere(const enginemath::Vec3& center, double radius, const Ray& r) {
 	enginemath::Vec3 oc = center - r.getOrigin();
 	auto a = r.getDirection().dot(r.getDirection());
-	auto b = (2 * r.getDirection()).dot(oc);
+	auto h = r.getDirection().dot(oc);
 	auto c = oc.dot(oc) - radius * radius;
-	auto discrim = b * b - 4 * a * c;
+	auto discrim = h * h - a * c;
 
 	// At least 1 root means the ray hit the sphere
-	return (discrim >= 0);
+	if (discrim < 0) {
+		return -1.0;
+	}
+	else {
+		return (h - std::sqrt(discrim)) / (a);
+	}
 }
 
 // Return color for a given scene ray
 color ray_color(const Ray& r) {
-	if (hitSphere(enginemath::Vec3(0.0f, 0.0f, -1.0f), 0.5, r))
-		return color(1.0, 0.0, 0.0);
+	auto t = hitSphere(enginemath::Vec3(0.0f, 0.0f, -1.0f), 0.5, r);
+	
+	if (t > 0.0) {
+		enginemath::Vec3 N = (r.at(t) - enginemath::Vec3(0.0f, 0.0f, -1.0f)).normalized();
+		return 0.5 * color(N.x + 1, N.y + 1, N.z + 1);
+	}
 
 	enginemath::Vec3 unitDirection = r.getDirection().normalized();
 	auto a = 0.5 * (unitDirection.y + 1.0);
