@@ -6,9 +6,10 @@ void writeColor(std::vector<unsigned char>& data, const color& pixel_color) {
 	auto g = pixel_color.y;
 	auto b = pixel_color.z;
 
-	int ir = int(255.999 * r);
-	int ig = int(255.999 * g);
-	int ib = int(255.999 * b);
+	static const interval intensity(0.000, 0.999);
+	int ir = int(255.999 * intensity.clamp(r));
+	int ig = int(255.999 * intensity.clamp(g));
+	int ib = int(255.999 * intensity.clamp(b));
 
 	data.push_back(static_cast<unsigned char>(ir));
 	data.push_back(static_cast<unsigned char>(ig));

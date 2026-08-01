@@ -3,6 +3,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <cstdlib>
 
 // Constants
 
@@ -15,6 +16,13 @@ inline double degrees_to_radians(double degrees) {
     return degrees * pi / 180.0;
 }
 
+inline double random_float() {
+    return std::rand() / (RAND_MAX + 1.0);
+}
+
+inline double random_float(float min, float max) {
+    return min + (max - min) * random_float();
+}
 // Common Headers
 
 #include "color.hpp"

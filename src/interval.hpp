@@ -14,5 +14,7 @@ class interval {
 
 		bool surrounds(float x) const;
 
+		float clamp(float x) const;
+
 		static const interval empty, universe;
 };

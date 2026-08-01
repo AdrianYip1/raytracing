@@ -23,3 +23,10 @@ bool interval::contains(float x) const {
 bool interval::surrounds(float x) const {
 	return min < x && x < max;
 }
+
+
+float interval::clamp(float x) const {
+	if (x < min) return min;
+	if (x > max) return max;
+	return x;
+}

@@ -7,12 +7,12 @@ void camera::render(const hittable& world) {
 	for (int j = 0; j < imageH; j++) {
 		std::clog << "\rScanlines remaining: " << (imageH - j) << " " << std::flush;
 		for (int i = 0; i < imageW; i++) {
-			auto pixelCenter = pixel00_loc + (j * pixelDv) + (i * pixelDu);
-			auto rayDirection = pixelCenter - camera_center;
-			Ray r(camera_center, rayDirection);
-
-			color pixel_color = ray_color(r, world);
-			writeColor(data, pixel_color);
+			color pixel_color(0.0, 0.0, 0.0);
+			for (int sample = 0; sample < samples_per_pixel; sample++) {
+				Ray r = get_ray(i, j);
+				pixel_color += ray_color(r, world);
+			}
+			writeColor(data, pixel_samples_scale * pixel_color);
 		}
 	}
 	std::clog << "\rDone.                 \n";
@@ -20,6 +20,8 @@ void camera::render(const hittable& world) {
 }
 
 void camera::initalize() {
+	pixel_samples_scale = 1.0 / samples_per_pixel;
+
 	imageH = int(imageW / aspect_ratio);
 	imageH = std::max(imageH, 1);
 
@@ -53,4 +55,22 @@ color camera::ray_color(const Ray& r, const hittable& world) const {
 	enginemath::Vec3 unitDir = r.getDirection().normalized();
 	auto a = 0.5 * (unitDir.y + 1.0);
 	return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+}
+
+Ray camera::get_ray(int i, int j) const {
+	// construct a camera ray from he origin directed at randomly sampled points
+	// from i, j
+	auto offset = sample_square(); 
+	auto pixel_sample = pixel00_loc +
+						((i + offset.x) * pixelDu) +
+						((j + offset.y) * pixelDv);
+
+	auto ray_origin = camera_center;
+	auto ray_direction = pixel_sample - ray_origin;
+
+	return Ray(ray_origin, ray_direction);
+}
+
+enginemath::Vec3 camera::sample_square() const {
+	return enginemath::Vec3(random_float() - 0.5, random_float() - 0.5, 0);
 }

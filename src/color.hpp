@@ -2,6 +2,7 @@
 
 #include <enginemath/vec3.hpp>
 #include <vector>
+#include "interval.hpp"
 
 using color = enginemath::Vec3;
 
