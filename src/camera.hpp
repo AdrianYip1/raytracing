@@ -6,6 +6,7 @@ class camera {
 		double aspect_ratio = 1.0;
 		int imageW = 100;
 		int samples_per_pixel = 10;
+		int max_depth = 10;
 
 		void render(const hittable& world);
 
@@ -19,7 +20,7 @@ class camera {
 		float pixel_samples_scale;
 
 		void initalize();
-		color ray_color(const Ray& r, const hittable& world) const;
+		color ray_color(const Ray& r, int depth, const hittable& world) const;
 		Ray get_ray(int i, int j) const;
 		enginemath::Vec3 sample_square() const;
 };

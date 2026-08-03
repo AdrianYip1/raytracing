@@ -1,6 +1,7 @@
 #include "camera.hpp"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "vendor/stb_image_write.h"
+#include "utilities.hpp"
 
 void camera::render(const hittable& world) {
 	initalize();
@@ -10,7 +11,7 @@ void camera::render(const hittable& world) {
 			color pixel_color(0.0, 0.0, 0.0);
 			for (int sample = 0; sample < samples_per_pixel; sample++) {
 				Ray r = get_ray(i, j);
-				pixel_color += ray_color(r, world);
+				pixel_color += ray_color(r, max_depth, world);
 			}
 			writeColor(data, pixel_samples_scale * pixel_color);
 		}
@@ -45,11 +46,14 @@ void camera::initalize() {
 	data.reserve(imageW * imageH * 3);
 }
 
-color camera::ray_color(const Ray& r, const hittable& world) const {
+color camera::ray_color(const Ray& r, int depth, const hittable& world) const {
+	if (depth <= 0) return color(0.0, 0.0, 0.0);
+
 	hit_record rec;
 
-	if (world.hit(r, interval(0, infinity), rec)) {
-		return 0.5 * (rec.normal + enginemath::Vec3(1.0, 1.0, 1.0));
+	if (world.hit(r, interval(0.001, infinity), rec)) {
+		enginemath::Vec3 direction = enginemath::random_on_hemisphere(rec.normal);
+		return 0.5 * ray_color(Ray(rec.p, direction), depth-1, world);
 	}
 
 	enginemath::Vec3 unitDir = r.getDirection().normalized();
