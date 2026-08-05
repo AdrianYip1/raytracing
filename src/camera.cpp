@@ -52,7 +52,7 @@ color camera::ray_color(const Ray& r, int depth, const hittable& world) const {
 	hit_record rec;
 
 	if (world.hit(r, interval(0.001, infinity), rec)) {
-		enginemath::Vec3 direction = enginemath::random_on_hemisphere(rec.normal);
+		enginemath::Vec3 direction = rec.normal + enginemath::random_unit_vector();
 		return 0.5 * ray_color(Ray(rec.p, direction), depth-1, world);
 	}
 
