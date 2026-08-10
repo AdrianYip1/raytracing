@@ -27,7 +27,7 @@ bool lambertian::scatter(const Ray& r_in,
 	return true;
 }
 
-metal::metal(const color& albedo) : albedo(albedo) {
+metal::metal(const color& albedo, float fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {
 
 }
 
@@ -37,7 +37,9 @@ bool metal::scatter(const Ray& r_in,
 	Ray& scattered) const {
 
 	enginemath::Vec3 reflected = r_in.getDirection().reflectAcross(rec.normal);
+
+	reflected = reflected.normalized() + (fuzz * enginemath::random_unit_vector());
 	scattered = Ray(rec.p, reflected);
 	attenuation = albedo;
-	return true;
+	return (scattered.getDirection().dot(rec.normal) > 0);
 }
