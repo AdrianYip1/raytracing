@@ -30,4 +30,5 @@ namespace enginemath {
 			return -on_unit_sphere;
 		}
 	}
+
 }

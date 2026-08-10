@@ -2,10 +2,13 @@
 
 #include "defines.h"
 
+class material;
+
 class hit_record {
 	public:
 		enginemath::Vec3 p;
 		enginemath::Vec3 normal;
+		std::shared_ptr<material> mat;
 		float t;
 		bool front_face;
 
