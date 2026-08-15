@@ -31,4 +31,11 @@ namespace enginemath {
 		}
 	}
 
+	inline enginemath::Vec3 refract(const enginemath::Vec3& uv, const enginemath::Vec3& n, double etai_over_etat) {
+		auto cos_theta = std::fmin((-uv).dot(n), 1.0);
+
+		enginemath::Vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+		enginemath::Vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.magnitudeSq())) * n;
+		return r_out_perp + r_out_parallel;
+	}
 }

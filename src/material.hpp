@@ -40,3 +40,16 @@ class metal : public material {
 		color albedo;
 		float fuzz;
 };
+
+class dielectric : public material {
+	public:
+		dielectric(float refraction_index);
+
+		bool scatter(const Ray& r_in,
+			const hit_record& rec,
+			color& attenuation,
+			Ray& scattered) const override;
+
+	private:
+		float refraction_index;
+};

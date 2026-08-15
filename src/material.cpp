@@ -43,3 +43,33 @@ bool metal::scatter(const Ray& r_in,
 	attenuation = albedo;
 	return (scattered.getDirection().dot(rec.normal) > 0);
 }
+
+dielectric::dielectric(float refraction_index) : refraction_index(refraction_index) {
+
+}
+
+bool dielectric::scatter(const Ray& r_in,
+	const hit_record& rec,
+	color& attenuation,
+	Ray& scattered) const {
+
+	attenuation = color(1.0f);
+	double ri = rec.front_face ? (1.0 / refraction_index) : refraction_index;
+
+	enginemath::Vec3 unit_direction = r_in.getDirection().normalized();
+	float cos_theta = std::fmin((-unit_direction).dot(rec.normal), 0);
+	float sin_theta = std::sqrt(1 - cos_theta * cos_theta);
+	enginemath::Vec3 direction;
+
+	// check for TIR
+	if (ri * sin_theta > 1.0) {
+		direction = unit_direction.reflectAcross(rec.normal);
+	}
+	else {
+		direction = enginemath::refract(unit_direction, rec.normal, ri);
+	}
+	
+
+	scattered = Ray(rec.p, direction);
+	return true;
+}
